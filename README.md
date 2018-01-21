@@ -2,6 +2,10 @@
 Program to approximate what a differential equation would look like.
 For more details visit https://hypnova.github.io/euler/.
 
+## Try it out for yourself
+
+The .jar file can be found in the project directory. Download and run that file on your computer.
+
 ## Screenshots
 
 ### Interface: 
