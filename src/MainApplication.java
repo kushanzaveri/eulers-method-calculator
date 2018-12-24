@@ -9,7 +9,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Cursor;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
@@ -20,17 +19,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import net.sourceforge.jeval.Evaluator;
-import javafx.util.Duration;
 
 import javax.swing.*;
 import java.awt.geom.Point2D;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -48,7 +43,7 @@ public class MainApplication extends Application implements EventHandler{
     LineChart lineChart;
     TableView<Point> tView;
     ArrayList<XYChart.Data<Double, Double>> allData;
-    Stage stage;
+
     boolean tableDrawn = false;
     boolean lineChartDrawn = false;
     public static void main(String [] args){
@@ -56,11 +51,11 @@ public class MainApplication extends Application implements EventHandler{
     }
 
     @Override
-    public void start(Stage prStage) {
-        this.stage=prStage;
+    public void start(Stage stage) {
         stage.setHeight(720); stage.setWidth(1360);
         stage.setResizable(false);
         layout = new GridPane(); layout.setAlignment(Pos.CENTER);
+//        layout.setPadding(new Insets(0,10,0,10));
 
         init();
         add();
@@ -101,7 +96,7 @@ public class MainApplication extends Application implements EventHandler{
         help = new Button("?");
         help.setFont(prFont);
         help.setTextFill(lC);
-        help.setOnAction(this);
+        //help.setOnAction();
     }
     public void add(){
         int rowI=5; int jump = 2;
@@ -215,13 +210,11 @@ public class MainApplication extends Application implements EventHandler{
 
         lineChart = new LineChart(new NumberAxis(), new NumberAxis());
         lineChart.getData().add(series);
-        ToolTipDefaultsFixer.setTooltipTimers(0,5000,200);
+
         for(XYChart.Data x: allData){
-            x.getNode().setStyle("-fx-background-color: #4f8d9e;");
             Tooltip t = new Tooltip("("+x.getXValue().toString()+", " + x.getYValue().toString() + ")");
             t.setFont(ttFont);
             Tooltip.install(x.getNode(), t);
-
         }
         lineChart.setTitle("Euler's Approximation");
         lineChart.setCursor(Cursor.CROSSHAIR);
@@ -230,6 +223,9 @@ public class MainApplication extends Application implements EventHandler{
         lineChart.setMinHeight(450); lineChart.setMaxHeight(550);
         series.getNode().setStyle("-fx-stroke: #4f8d9e;");
         series.nodeProperty().get().setStyle("-fx-stroke: #4f8d9e; ");
+        for (int n = 0; n < allData.size();n++ ) {
+            allData.get(n).getNode().setStyle("-fx-background-color: #4f8d9e;");
+        }
         Legend legend = (Legend)lineChart.lookup(".chart-legend");
         legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #4f8d9e;");
         addLineChart();
@@ -272,39 +268,8 @@ public class MainApplication extends Application implements EventHandler{
         layout.add(tView, 7, 5);
     }
 
-    public void legend(){
-        int width=930, height = 350;
-        Stage lStage = new Stage();
-        Scene lScene = new Scene(new Group());
-
-        lStage.setTitle("Help");
-        lStage.setAlwaysOnTop(true);
-        lStage.setResizable(false); lStage.requestFocus(); lStage.setWidth(width); lStage.setHeight(height);
-        lStage.setX(stage.getX()+stage.getWidth()/2-width/2);
-        lStage.setY(stage.getY()+stage.getHeight()/2-height/2);
-
-        VBox root = new VBox();
-        // edit
-        root.setStyle("-fx-background-color: rgb(179, 224, 225);");
-        ImageView legendIV = new ImageView();
-        Image legend = new Image(MainApplication.class.getResourceAsStream("legend.png"));
-
-        legendIV.setImage(legend);
-
-        root.getChildren().addAll(legendIV);
-
-        lScene.setRoot(root);
-        lStage.setScene(lScene);
-        lStage.show();
-    }
 
 
     @Override
-    public void handle(Event event) {
-        if(event.getSource()==generate)
-            errorTrap();
-        else
-            legend();
-    }
-
+    public void handle(Event event) {errorTrap();}
 }
